@@ -21,7 +21,7 @@ process.source.lumisToProcess.extend(myLumis)
 process.load('WenuFilter.WenuFilter.WenuFilter_cfi')
 
 process.WenuFilter.csvFileName = cms.string('Wenu_Run2011A.csv')
-process.WenuFilter.electronMinPt = cms.double(20.0)
+process.WenuFilter.electronMinPt = cms.double(25.0)
 
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(500000))
 

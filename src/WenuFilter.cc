@@ -61,7 +61,7 @@ WenuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   if ( ! electrons.isValid() )
   {  
-    std::cerr<<"ZeeFilter: invalid collection"<<std::endl;
+    std::cerr<<"WenuFilter: invalid collection"<<std::endl;
     return false;
   }
 
@@ -70,7 +70,7 @@ WenuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   if ( ! pfMets.isValid() ) 
   {    
-    std::cerr<<"WmunuFilter: invalid PFMET collection"<<std::endl;
+    std::cerr<<"WenuFilter: invalid PFMET collection"<<std::endl;
     return false;
   }
   
@@ -83,7 +83,9 @@ WenuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   double pt, eta, phi, charge;
   unsigned int nElectrons = 0;
-  float sigmaEtaEta, hcalOverEcal;//, isoTrack, isoECAL, isoHCAL;
+  float sigmaEtaEta, hcalOverEcal, isoTrack, isoECAL, isoHCAL;
+  double delEta = 0.0;
+  double delPhi = 0.0;
   std::string type;
 
   for ( reco::GsfElectronCollection::const_iterator ei = electrons->begin(), eie = electrons->end();
@@ -94,18 +96,17 @@ WenuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if ( pt < minElectronPt_ )
       continue;
 
-    if ( pt > 10 && nElectrons != 0 )
+    if ( pt > 20 && nElectrons != 0 )
       return false;
     
     if ( pt > minElectronPt_ ) 
     {
       sigmaEtaEta = ei->sigmaEtaEta();
       hcalOverEcal = ei->hcalOverEcal();
-      /*
+      
       isoTrack = ei->dr04TkSumPt();
       isoECAL = ei->dr04EcalRecHitSumEt(); 
       isoHCAL = ei->dr04HcalTowerSumEt();
-      */
 
       if ( ei->isEB() ) 
       {
@@ -133,7 +134,8 @@ WenuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   if ( nElectrons == 1 ) 
   {
     csvOut_<< iEvent.id().run()<<","<< iEvent.id().event() <<","<<  pt <<","<< eta <<","<< phi <<","<< charge <<","<<
-      type <<","<< sigmaEtaEta <<","<< hcalOverEcal <<","<<  MET <<","<< phiMET <<std::endl;
+      type <<","<< delEta <<","<< delPhi <<","<< sigmaEtaEta <<","<< hcalOverEcal <<","<< 
+      isoTrack <<","<< isoECAL <<","<< isoHCAL <<","<<  MET <<","<< phiMET <<std::endl;
     return true;
   }
   
@@ -143,7 +145,7 @@ WenuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 WenuFilter::beginJob()
 {
-  csvOut_<<"Run,Event,pt,eta,phi,Q,type,sigmaEtaEta,HoverE,MET,phiMET"<<std::endl;
+  csvOut_<<"Run,Event,pt,eta,phi,Q,type,delEta,delPhi,sigmaEtaEta,HoverE,isoTrack,isoEcal,isoHcal,MET,phiMET"<<std::endl;
 }
 
 void 
